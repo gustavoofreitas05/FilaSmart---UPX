@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Entrar · FilaSmart{% endblock %}
+{% block content %}
+<section class="card" style="max-width:540px;margin:28px auto">
+  <span class="pill">BEM-VINDO DE VOLTA</span><h1 style="margin-top:16px">Entrar na conta</h1>
+  <p class="muted">Acesse suas filas ou gerencie os atendimentos do estabelecimento.</p>
+  <form method="post">
+    <div class="field"><label for="email">E-mail</label><input id="email" type="email" name="email" autocomplete="email" required></div>
+    <div class="field"><label for="password">Senha</label><input id="password" type="password" name="password" autocomplete="current-password" required></div>
+    <button type="submit">Entrar</button>
+  </form>
+  <p class="muted small">Ainda não tem conta? <a href="{{ url_for('register') }}">Cadastre-se</a>.</p>
+</section>
+{% endblock %}

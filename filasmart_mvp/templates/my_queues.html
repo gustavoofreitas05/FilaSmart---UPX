@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Minhas filas · FilaSmart{% endblock %}
+{% block content %}
+<div class="section-head"><div><h1>Minhas filas</h1><p class="muted">Acompanhe a posição e o estado real dos seus atendimentos.</p></div><a class="btn secondary" href="{{ url_for('index') }}">Ver serviços</a></div>
+{% if entries %}
+  {% for e in entries %}
+  <article class="card">
+    <div class="row"><div><h3>{{ e['service_name'] }}</h3><p class="muted">{{ e['business_name'] }}</p></div><span class="pill">{{ {'waiting':'Aguardando','called':'Chamado','serving':'Em atendimento','completed':'Concluído','cancelled':'Cancelado'}.get(e['status'],e['status']) }}</span></div>
+    {% if e['status']=='waiting' %}
+      <p class="muted small">Sua posição atual</p><div class="stat">#{{ e['position'] }}</div>
+      <form method="post" action="{{ url_for('cancel',eid=e['id']) }}" style="margin-top:16px"><button class="danger" type="submit">Sair da fila</button></form>
+    {% elif e['status']=='called' %}<p>É sua vez. Dirija-se ao local de atendimento.</p>
+    {% elif e['status']=='serving' %}<p>Seu atendimento está em andamento.</p>
+    {% elif e['status']=='completed' %}<p>Atendimento concluído.</p>
+    {% elif e['status']=='cancelled' %}<p>Você saiu desta fila.</p>{% endif %}
+    <p class="muted small">Entrada: {{ e['joined_at'][:16].replace('T',' ') }}</p>
+  </article>
+  {% endfor %}
+{% else %}
+  <div class="empty-state"><h3>Você ainda não entrou em nenhuma fila</h3><p class="muted">Escolha um serviço disponível para registrar sua entrada.</p><a class="btn" href="{{ url_for('index') }}">Explorar serviços</a></div>
+{% endif %}
+{% endblock %}

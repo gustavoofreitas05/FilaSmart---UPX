@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Criar conta · FilaSmart{% endblock %}
+{% block content %}
+<section class="card" style="max-width:600px;margin:28px auto">
+  <span class="pill">COMECE POR AQUI</span><h1 style="margin-top:16px">Criar conta</h1>
+  <p class="muted">Escolha o tipo de conta para usar o FilaSmart.</p>
+  <form method="post">
+    <div class="field"><label for="name">Nome</label><input id="name" name="name" autocomplete="name" maxlength="100" required></div>
+    <div class="field"><label for="email">E-mail</label><input id="email" type="email" name="email" autocomplete="email" required></div>
+    <div class="field"><label for="password">Senha (mínimo 8 caracteres)</label><input id="password" type="password" name="password" minlength="8" autocomplete="new-password" required></div>
+    <div class="field"><label for="role">Tipo de conta</label><select id="role" name="role"><option value="customer">Cliente</option><option value="owner">Estabelecimento</option></select></div>
+    <button type="submit">Criar conta</button>
+  </form>
+  <p class="muted small">Já tem uma conta? <a href="{{ url_for('login') }}">Entrar</a>.</p>
+</section>
+{% endblock %}

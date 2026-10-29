@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}FilaSmart · Filas virtuais{% endblock %}
+{% block content %}
+<section class="hero">
+  <span class="pill">ATENDIMENTO MAIS ORGANIZADO</span>
+  <h1>Espere menos.<br>Organize melhor.</h1>
+  <p>Entre em filas virtuais, acompanhe sua posição e saiba quando chegar a sua vez — sem precisar ficar esperando em pé.</p>
+  {% if not logged_user %}<a class="btn" href="{{ url_for('register') }}">Começar agora <span aria-hidden="true">→</span></a>
+  {% elif logged_user['role']=='customer' %}<a class="btn" href="{{ url_for('my_queues') }}">Acompanhar minhas filas</a>
+  {% else %}<a class="btn" href="{{ url_for('owner') }}">Abrir painel do estabelecimento</a>{% endif %}
+</section>
+<div class="section-head"><div><h2>Serviços disponíveis</h2><p class="muted">Filas ativas cadastradas pelos estabelecimentos.</p></div><span class="pill">{{ services|length }} serviço(s)</span></div>
+{% if services %}
+<div class="grid">
+  {% for s in services %}
+  <article class="card">
+    <div class="row"><h3>{{ s['name'] }}</h3><span class="pill">{{ s['waiting_count'] }} aguardando</span></div>
+    <p class="muted small">{{ s['business_name'] }}</p>
+    <p>{{ s['description'] or 'Atendimento por fila virtual.' }}</p>
+    {% if logged_user and logged_user['role']=='customer' %}
+      <form method="post" action="{{ url_for('join',sid=s['id']) }}"><button type="submit">Entrar na fila</button></form>
+    {% elif not logged_user %}<a class="btn" href="{{ url_for('login') }}">Entre para participar</a>
+    {% else %}<p class="muted small">Você está usando uma conta de estabelecimento.</p>{% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><h3>Nenhum serviço cadastrado ainda</h3><p class="muted">Os serviços aparecerão aqui depois que um estabelecimento criar o cadastro.</p><a class="btn" href="{{ url_for('register') }}">Criar conta</a></div>
+{% endif %}
+{% endblock %}

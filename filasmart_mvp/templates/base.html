@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>{% block title %}FilaSmart{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+<header>
+  <a class="brand" href="{{ url_for('index') }}">FilaSmart</a>
+  <nav aria-label="Navegação principal">
+    <a href="{{ url_for('index') }}">Serviços</a>
+    {% if logged_user %}
+      {% if logged_user['role']=='owner' %}<a href="{{ url_for('owner') }}">Painel</a>{% else %}<a href="{{ url_for('my_queues') }}">Minhas filas</a>{% endif %}
+      <a href="{{ url_for('logout') }}">Sair</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Entrar</a><a href="{{ url_for('register') }}">Criar conta</a>
+    {% endif %}
+  </nav>
+</header>
+<main class="wrap">
+  {% with ms=get_flashed_messages(with_categories=true) %}
+    {% for cat,msg in ms %}<div class="flash {{ cat }}" role="status">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer>FilaSmart · Protótipo acadêmico · Sorocaba, SP</footer>
+</body>
+</html>

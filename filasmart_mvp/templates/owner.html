@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Painel do estabelecimento · FilaSmart{% endblock %}
+{% block content %}
+<div class="section-head"><div><h1>Painel do estabelecimento</h1><p class="muted">Gerencie serviços e avance os atendimentos cadastrados no sistema.</p></div><span class="pill">Painel de gestão</span></div>
+<div class="grid">
+  <section class="card">
+    <h2 style="margin-top:0">Cadastrar serviço</h2>
+    <form method="post" action="{{ url_for('create_service') }}">
+      <div class="field"><label for="service-name">Nome do serviço</label><input id="service-name" name="name" required maxlength="100" placeholder="Ex.: Atendimento geral"></div>
+      <div class="field"><label for="description">Descrição</label><textarea id="description" name="description" rows="3" placeholder="Descreva brevemente o atendimento"></textarea></div>
+      <button type="submit">Cadastrar serviço</button>
+    </form>
+  </section>
+  <section class="card">
+    <h2 style="margin-top:0">Resumo do sistema</h2>
+    <div class="grid">
+      <div><div class="stat">{{ services|length }}</div><div class="muted small">Serviço(s) cadastrado(s)</div></div>
+      <div><div class="stat">{{ entries|length }}</div><div class="muted small">Atendimento(s) ativo(s)</div></div>
+    </div>
+    <p class="muted small" style="margin-top:20px">Indicadores calculados a partir dos registros do banco de dados.</p>
+  </section>
+</div>
+<div class="section-head"><h2>Serviços cadastrados</h2></div>
+{% if services %}
+<div class="grid">
+  {% for s in services %}
+  <article class="card">
+    <div class="row"><h3>{{ s['name'] }}</h3><span class="pill">{{ 'Ativo' if s['active'] else 'Pausado' }}</span></div>
+    <p>{{ s['description'] or 'Sem descrição.' }}</p>
+    <p>Aguardando: <strong>{{ s['waiting_count'] }}</strong> · Concluídos: <strong>{{ s['completed_count'] }}</strong></p>
+    <form method="post" action="{{ url_for('toggle',sid=s['id']) }}"><button class="secondary" type="submit">{{ 'Pausar serviço' if s['active'] else 'Reativar serviço' }}</button></form>
+  </article>
+  {% endfor %}
+</div>
+{% else %}<div class="empty-state"><h3>Nenhum serviço cadastrado</h3><p class="muted">Cadastre seu primeiro serviço para começar a receber clientes.</p></div>{% endif %}
+<div class="section-head"><div><h2>Fila ativa</h2><p class="muted">Use as ações na ordem do atendimento.</p></div><span class="pill">{{ entries|length }} ativo(s)</span></div>
+{% if entries %}
+<section class="card">
+  {% for e in entries %}
+  <div class="queue-item">
+    <div class="row">
+      <div><strong>{{ e['customer_name'] }}</strong><div class="muted small">{{ e['service_name'] }} · {{ {'waiting':'Aguardando','called':'Chamado','serving':'Em atendimento'}.get(e['status'],e['status']) }}</div><div class="muted small">Entrada: {{ e['joined_at'][:16].replace('T',' ') }}</div></div>
+      <div>
+        {% if e['status']=='waiting' %}<form class="inline" method="post" action="{{ url_for('action',eid=e['id']) }}"><input type="hidden" name="action" value="call"><button type="submit">Chamar próximo</button></form>
+        {% elif e['status']=='called' %}<form class="inline" method="post" action="{{ url_for('action',eid=e['id']) }}"><input type="hidden" name="action" value="serve"><button type="submit">Iniciar atendimento</button></form>
+        {% elif e['status']=='serving' %}<form class="inline" method="post" action="{{ url_for('action',eid=e['id']) }}"><input type="hidden" name="action" value="complete"><button type="submit">Concluir</button></form>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% else %}<div class="empty-state"><h3>Nenhum atendimento ativo</h3><p class="muted">Quando um cliente entrar em uma fila, ele aparecerá aqui.</p></div>{% endif %}
+{% endblock %}
